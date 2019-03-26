@@ -12,11 +12,8 @@ app.use(cors());
 app.get('/', (req, res) => res.send("it's working"));
 app.get('/region/:handle', (req, res) => {
   const client = new Client ({
-    user: 'postgres',
-    password: 'Tu11PL023',
-    host: '127.0.0.1',
-    database: 'iceland_map_data',
-    port: 5432,
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
   })
   
   client.connect()
