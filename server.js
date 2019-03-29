@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Client } = require('pg');
 
+const getRegion = require('./controllers/getRegion')
 
 const app = express();
 app.use(bodyParser.json());
@@ -11,26 +12,7 @@ app.use(cors());
 
 app.get('/', (req, res) => res.send("it's working"));
 
-app.get('/region/:handle', (req, res) => {
-  const client = new Client ({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-  })
-  
-  client.connect()
-    .then(() => {
-      console.log("connected successfuly")    
-      return client.query(
-        "SELECT regions.name, regions.zoom, regions.minzoom, regions.maxzoom, regions.center, regions.bound1, regions.bound2, markers.name, markers.region, markers.position FROM regions INNER JOIN markers ON regions.name = markers.region WHERE regions.name = $1 ", [req.params.handle]
-      )
-    })
-    .then((results) => {
-      console.table(results.rows)
-      res.json(results.rows)
-    })
-    .catch(err => console.log('err', err))
-    .finally(() => client.end())
-})
+app.get('/region/:handle', (req, res) => {getRegion.handleGetRegion(req, res, Client)} )
 
 
 app.post('/region/:handle', (req, res) => {
@@ -56,8 +38,8 @@ app.post('/region/:handle', (req, res) => {
 })
 
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log('app is running on port 3002')
+  console.log(`app is running on port ${PORT}`)
 })
